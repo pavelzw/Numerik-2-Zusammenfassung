@@ -1,5 +1,7 @@
+\setcounter{section}{4}
 \section{Nichtlineare Gleichungssysteme}
 \subsection{Fixpunktiteration}
+
 \begin{karte}{Konvergenzordnung}
     Sei \( (e_k)_k \) eine Folge 
     mit \(e_k > 0 \) und \(e_k \rightarrow 0\).
@@ -7,4 +9,154 @@
     wenn ein \(C > 0\) und ein \(k_0 \in \N_0\) existiert, sodass 
     \[ e_{k+1} \leq C e_k^p \quad \forall k\geq k_0 \]
     gilt. Für \(p = 1\) fordert man zusätzlich \(C < 1\).
+\end{karte}
+
+\begin{karte}{Lokale Konvergenz}
+    Ein Iterationsverfahren, welches eine Folge von Iterierten 
+    \( (x_k)_k \subset \R^n \) liefert, heißt \textit{lokal konvergent}
+    gegen \(x\in \R^n\), falls eine Umgebung \(U \subset \R^n\) um \(x\) 
+    existiert, sodass 
+    \[ x_k \rightarrow x \forall x_0 \in U \]
+    gilt. Das Verfahren heißt \textit{global konvergent}, falls \( U = \R^n \). 
+\end{karte}
+
+\begin{karte}{Banach'scher Fixpunksatz}
+    Sei \( \abb{\Phi}{\Omega}{\Omega} \) eine kontrahierende 
+    Selbstabbildung der abgeschlossenen Teilmenge \( \Omega \subset \R^n \) 
+    bezüglich \( || \cdot || \), d. h. 
+    \begin{enumerate}
+        \item \( \Phi(\Omega) \subset \Omega \),
+        \item \( ||\Phi(x) - \Phi(y)|| \leq L ||x-y|| \) für alle \( x,y \in \Omega \).
+    \end{enumerate}
+    Dann hat die Fixpunktgleichung genau eine Lösung \( \widehat{x} \in \Omega \) 
+    und die Fixpunktiteration mit beliebigem \(x_0 \in \Omega\) konvergiert linear gegen \( \widehat{x} \).
+    Genauer gilt für den Fehler \( e_k = x_k - \widehat{x} \)
+    \begin{enumerate}
+        \item \( ||e_{k+1}|| \leq L ||e_k || \),
+        \item \( ||e_k|| \leq \frac{L}{1-L} ||x_1 - x_0 || \),
+        \item \( ||e_k|| \leq \frac{L}{1-L} ||x_k - x_{k-1}|| \).
+    \end{enumerate}
+\end{karte}
+
+\begin{karte}{Fixpunktiteration Konvergenz}
+    Es sei \( \abb{\Phi}{\Omega}{\R^n} \) zweimal stetig differenzierbar und 
+    \( \widehat{x} \) sei eine Lösung der Fixpunktgleichung. Ist 
+    \( ||\Phi'(\widehat{x})|| < 1 \) in einer beliebigen (von Vektornorm induzierten) Matrixnorm, 
+    dann konvergiert die Fixpunktiteration lokal linear und für den Fehler 
+    \( e_k = x_k - \widehat{x} \) gilt 
+    \[ e_{k+1} = \Phi'(\widehat{x}) e_k + \mathcal{O}(||e_k||^2). \]
+\end{karte}
+
+\subsection{Newton-Verfahren}
+
+\begin{karte}{Newton-Verfahren}
+    \begin{tabbing}
+        while \= noch nicht konvergent {Konvergenzkriterium} do \\
+        \> Berechne \( f(x_k) \) und \( f'(x_k) \) \\
+        \> Löse das linearisierte Problem \( f'(x_k) \Delta x_k = -f(x_k) \) \\
+        \> Setze \( x_{k+1} = x_k + \Delta x_k \) \\
+        \> if \= keine Konvergenz möglich then \\
+        \> \> Stop {Abbruchkriterium} \\
+        \> end if \\
+        end while
+    \end{tabbing}
+\end{karte}
+
+\begin{karte}{Fehlerabschätzung Newton-Verfahren}
+    Sei \(f \) dreimal stetig differenzierbar, \( f(\widehat{x}) = 0 \) 
+    und \(f'(x)\) sei invertierbar in einer Umgebung von \(\widehat{x}\). 
+    Ist die Fehlernorm \(||e_k||\) hinreichend klein, dann gilt für die Folge 
+    \( (x_k)_k \) aus dem Newton-Verfahren 
+    \[ e_{k+1} = \frac{1}{2} f'(x_k)^{-1} f''(x_k)[e_k, e_k] + \mathcal{O}(||e_k||^3). \]
+\end{karte}
+
+\begin{karte}{Newton-Mysovskii}
+    Sei \( \Omega \subset \R^n \) offen, \( \abb{f}{\Omega}{\R^n} \) stetig 
+    differenzierbar und \(f'(x)\) sei invertierbar für jedes \(x\in \Omega\).
+    Für beliebiges \(x_0 \in \Omega\) gebe es \( \alpha, \omega \geq 0 \) mit 
+    \begin{enumerate}
+        \item \( ||\Delta x_0 ||\leq \alpha, \Delta x_0 = - f'(x_0)^{-1} f(x_0) \),
+        \item \( ||f'(x)^{-1}(f'(y) - f'(z))(y-z)||\leq \omega ||y-z||^2 \) 
+        für alle \(x,y,z\in\Omega\), für die \(y\in [x,z]\),
+        \item \( \gamma := \alpha \omega/2 < 1 \),
+        \item \( B(x_0, \rho) \subset \Omega \) für \( \rho = \alpha/(1-\gamma) \).
+    \end{enumerate}
+    Dann bleibt die Newton-Folge \( (x_k) \) in \(B(x_0, \rho)\) und konvergiert gegen eine Lösung 
+    \( \widehat{x} \) von \( f(x) = 0 \). Es gilt die Abschätzung 
+    \[ ||x_{k+1} - x_k||\leq \frac{\omega}{2} ||x_k - x_{k-1}||^2. \]
+\end{karte}
+
+\subsection{Vereinfachtes Newton-Verfahren}
+
+\begin{karte}{Vereinfachtes Newton-Verfahren}
+    \begin{tabbing}
+        Berechne \( A \approx f'(x_0) \) und die LR-Zerlegung von \(A\) \\
+        for \= \(k = 0,1,2,\ldots\) do \\
+        \> Berechne \( f(x_k) \) \\
+        \> Löse mit Hilfe der LR-Zerlegung \( A\Delta x_k = - f(x_k) \) \\
+        \> Setze \( x_{k+1} = x_k + \Delta x_k \) \\
+        end for
+    \end{tabbing}
+\end{karte}
+
+\begin{karte}{Fehlerabschätzung vereinfachtes Newton-Verfahren}
+    Es sei \( \abb{f}{\Omega}{\R^n} \) zweimal stetig differenzierbar, 
+    \( f(\widehat{x}) = 0 \) und \(A\in \R^{n,n}\) sei invertierbar. 
+    Dann gilt für den Fehler \(e_k\) der Näherungen \(x_k\) des vereinfachten 
+    Newton-Verfahrens 
+    \[ e_{k+1} = (I - A^{-1}f'(x_k)) e_k + \mathcal{O}(||e_k||^2), \]
+    falls \(||e_k||\) hinreichend klein ist.
+\end{karte}
+
+\begin{karte}{Fehlerabschätzung vereinfachtes Newton-Verfahren}
+    Sei \( \Omega \subset \R^n \) offen, \( \abb{f}{\Omega}{\R^n} \) stetig 
+    differenzierbar und \(A \in \R^{n,n}\) invertierbar. Ferner sei \(x_0 \in \Omega\) gewählt und es gelte 
+    \begin{enumerate}
+        \item \(||\Delta x_0 || \leq \alpha\),
+        \item \( ||I - A^{-1} f'(x) || \leq \gamma < 1 \) für alle \(x\in \Omega\),
+        \item für \(\rho = \alpha/(1-\gamma)\) sei \(B(x_0, \rho) \subset \Omega\).
+    \end{enumerate}
+    Dann gilt für die Näherungen des vereinfachten Newton-Verfahrens 
+    \(x_k \in B(x_0,\rho)\). \(x_k\) konvergiert gegen eine Nullstelle \( \widehat{x} \) von 
+    \(f\) und es gilt die Abschätzung 
+    \[ ||x_{k+1} - x_k|| \leq \gamma||x_k - x_{k-1}||. \]
+\end{karte}
+
+\subsection{Sekantenverfahren}
+
+\begin{karte}{Sekantenverfahren}
+    \(f'\) wird durch den Differnzenquotienten 
+    \[ f'(x_k) \approx \frac{f(x_k) - f(x_{k-1})}{x_k - x_{k-1}} \]
+    approximiert. 
+
+    Somit folgt 
+    \[ x_{k+1} = \frac{x_{k-1}f(x_k) - x_kf(x_{k-1})}{x_k - x_{k-1}} \]
+\end{karte}
+
+\begin{karte}{Konvergenzordnung Sekantenverfahren}
+    Sei \(\abb{f}{\Omega}{\R}\) zweimal stetig differenzierbar im Intervall \(\Omega = [a,b]\), 
+    \( f(\widehat{x}) = 0 \) für ein \( \widehat{x} \in (a,b) \) mit \( f'(\widehat{x}) \neq 0 \) 
+    und \( f''(\widehat{x}) \neq 0 \). Dann konvergiert das Sekantenverfahren lokal gegen 
+    \(\widehat{x}\) mit der exakten Konvergenzordnung \( p = \frac{1}{2}(1+\sqrt{5}) \approx 1.62 \).
+\end{karte}
+
+\subsection{Nichtlineare Ausgleichsprobleme}
+
+\begin{karte}{Gauß-Newton-Verfahren}
+    \begin{tabbing}
+        while \= noch nicht konvergent {Konvergenzkriterium} do \\
+        \> Berechne \( f(x_k) \) und \( f'(x_k)\) \\
+        \> Löse das linearisierte Problem: \(||f(x_k) + f'(x_k)\Delta x_k|| \rightarrow \min \) \\
+        \> Setze \( x_{k+1} = x_k + \Delta x_k \) \\
+        end while
+    \end{tabbing}
+\end{karte}
+
+\begin{karte}{Fehler Gauß-Newton-Verfahren}
+    Es sei \( \abb{f}{\R^n}{\R^n} \), \(m\geq n\), dreimal stetig differenzierbar, 
+    \( \widehat{x} \) sei Lösung von \( g(x) = \frac{1}{2}||f(x)||_2^2 \rightarrow \min \)
+    und \(f'(x) \) habe in einer Umgebung von \( \widehat{x} \) maximalen Rang. Ist die 
+    Fehlernorm \( ||e_k|| \) hinreichend klein, dann gilt für die Folge \( (x_k)_k \) 
+    aus dem Gauß-Newton-Verfahren 
+    \[ e_{k+1} = -(f'(x_k)^T f'(x_k))^{-1} f''(x_k) [f(x_k), e_k] + \mathcal{O}(||e_k||^2). \]
 \end{karte}
