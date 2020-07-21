@@ -1,4 +1,5 @@
 \section{Eigenwerte}
+\subsection{Grundlagen}
 
 \begin{karte}{Reduzibel}
     Eine Matrix \( A \in \C^{n,n} \) heißt reduzibel, wenn es eine Permutationsmatrix \(P\)
@@ -6,4 +7,194 @@
     \[ P^T A P = B = \left[ \begin{matrix} A_{11} & A_{12} \\ 0 & A_{22} \end{matrix} \right] \]
     mit quadratischen Matrizen \( A_{11} \in \C^{k,k}, A_{22} \in \C^{n-k,n-k} \) gilt. 
     Andernfalls heißt \( A \) irreduzibel.
+\end{karte}
+
+\begin{karte}{Reduzibilitätskriterium}
+    Seien \( A \in \K^{n,n}, B\in \K^{k,k}, X \in \K^{n,k} \) 
+    mit \( \K = \C \) oder \(\K = \R \) und es gelte 
+    \[ AX = XB, \rk X = k. \]
+    Dann gibt es eine unitäre Matrix \(Q \in \K^{n,n}\) mit 
+    \[ Q^H A Q = T = \left[ \begin{matrix}
+        T_{11} & T_{12} \\ 0 & T_{22}
+    \end{matrix} \right], \]
+    wobei \( \lambda(T_{11}) = \lambda(A) \cap \lambda(B) \).
+\end{karte}
+
+\subsection{Normalformen}
+
+\begin{karte}{Schur-Normalform}
+    Zu jedem \(A\in \C^{n,n}\) gibt es eine unitäre Matrix \(U \in \C^{n,n}\) so, dass 
+    \[ U^H A U = R = D + N, \]
+    wobei \(R\) obere Dreiecksform, \(N\) strikte obere Dreiecksform hat und 
+    \(D = \diag(\lambda_1, \ldots, \lambda_n)\) mit den Eigenwerten \( \lambda_1, \ldots, \lambda_n \)
+    von \(A\) ist. Die Matrix \(U\) kann so gewählt werden, dass die Eigenwerte in beliebiger 
+    Reihenfolge in \(D\) auftreten.
+\end{karte}
+
+\begin{karte}{Reelle Schur-Normalform}
+    Zu jedem \( A\in \R^{n,n} \) gibt es eine reelle Orthogonalmatrix \(Q\in \R^{n,n}\), 
+    so dass 
+    \[ Q^T A Q = R = D + N,\]
+    wobei \(R\) eine reelle obere Blockdreiecksmatrix ist, deren Blockdiagonalmatrix \(D\) 
+    aus \(1\times 1\) und \(2\times 2\) Blöcken besteht, bei denen alle \(2\times 2\) Blöcke 
+    konjugiert komplexe Eigenwerte haben. \(N\) ist eine strikte obere Dreiecksmatrix.
+\end{karte}
+
+\begin{karte}{Normale Matrizen}
+    Eine Matrix \(A\in \C^{n,n}\) ist normal genau dann, wenn \(A A^H = A^H A\). 
+
+    Eine Matrix \(A\in \C^{n,n}\) ist normal genau dann, wenn sie unitär diagonalisierbar ist, 
+    d. h. es gibt eine unitäre Matrix \(U\in \C^{n,n}\), so dass 
+    \[ U^H A U = \diag(\lambda_1, \ldots, \lambda_n). \]
+\end{karte}
+
+\begin{karte}{Jordan Normalform}
+    Zu jedem \( A \in \C^{n,n} \) gibt es eine nicht singuläre Matrix 
+    \(X\in \C^{n,n}\), so dass
+    \[ X^{-1} A X = J = \diag(J_{m_1}(\lambda_1), \ldots, J_{m_r}(\lambda_r)), \]
+    wobei 
+    \[ J_{m_i}(\lambda_i) = \left[ \begin{matrix}
+        \lambda_i & 1 & & 0 \\
+        & \ddots & \ddots & \\
+        & & \ddots & 1 \\
+        & & & \lambda_i
+    \end{matrix} \right] = \lambda_i I + N \in \C^{m_i,m_i}. \]
+    Ist \(m_i > 1\), so nennt man \(\lambda_i\) einen Eigenwert 
+    mit Defekt und sagt, dass \(A\) Defekt ist.
+\end{karte}
+
+\begin{karte}{Spektralradius}
+    Sei \(A\in \C^{n,n}\) mit Spektralradius \(\rho = \rho(A) = \max_{\lambda\in\lambda(A)} \abs{\lambda}\) gegeben.
+    Bezeichnen wir mit \( ||\cdot || \) eine beliebige \(p\)-Norm, \(1\leq p \leq \infty\), 
+    so ist für \(T\in \C^{n,n}\) nicht singulär 
+    \[ ||A||_T = ||T^{-1} A T|| \] 
+    die zugehörige \(T\)-Norm definiert und es gilt 
+    \begin{enumerate}
+        \item \(\rho(A)\leq ||A||\).
+        \item Ist \(A\) diagonalisierbar, dann gibt es eine nicht singuläre Matrix 
+        \(T\), sodass \( ||A||_T = \rho \).
+        \item Zu jedem \(\epsilon > 0 \) gibt es eine nicht singuläre Matrix 
+        \(T(\epsilon)\), so dass \(||A||_{T(\epsilon)} \leq \rho + \epsilon\).
+    \end{enumerate}
+\end{karte}
+
+\subsection{Störungstheorie, Einschließungssätze}
+\begin{karte}{Bauer-Fike}
+    Sei \(A\in \C^{n,n}\) diagonalisierbar, \( X^{-1} A X = D = \diag(\lambda_1, \ldots, \lambda_n) \)
+    und sei \( \mu \in \lambda(A+E), E \in \C^{n,n} \). Dann gilt in jeder \(p\)-Norm 
+    \[ \min_{1\leq j\leq n} \abs{\mu - \lambda_j} \leq \kappa(X) ||E||. \]
+\end{karte}
+
+\begin{karte}{Gershgorin}
+    Es gilt 
+    \[ \lambda(A) \subseteq \bigcup_{j=1}^n \mathcal{D}_j, 
+    \qquad \mathcal{D}_j = \set{t\in \C: \abs{z - a_{jj}}\leq r_j}, 
+    \qquad r_j = \sum_{l=1, l\neq j}^n \abs{a_{jl}}. \]
+    Wegen \(\lambda(A) = \lambda(A^T)\) kann man den Schnitt der 
+    Gershgorin-Kreise von \(A\) und \(A^T\) betrachten.
+\end{karte}
+
+\begin{karte}{Eingenwert Fehlerabschätzung}
+    Sei \(\lambda \in \lambda(A)\) ein einfacher Eigenwert von \(A\) 
+    und seien \(x, y\) zugehörige rechte und linke Eigenvektoren 
+    \[ Ax = \lambda x, y^H A = \lambda y^H. \]
+
+    Dann hat die Matrix \( A + \epsilon E \) für \(\epsilon\) hinreichend 
+    klein einen einfachen Eigenwert \( \lambda(\epsilon) \), so dass 
+    \[ \lambda(\epsilon) = \lambda + \epsilon \frac{y^H E x}{y^H x} + \mathcal{O}(\epsilon^2). \]
+\end{karte}
+
+\begin{karte}{Rayleigh-Quotient}
+    Zu gegebener Matrix \(A\) und \(x \neq 0\) heißt 
+    \[ \varrho_A(x) = \frac{x^H A x}{x^H x} \]
+    Rayleigh-Quotient von \(x\).
+
+    Die Menge 
+    \[ \mathcal{F}(A) = \set{\varrho_A(x) : x\in \C^n, x\neq 0} \]
+    aller Rayleigh-Quotienten heißt der Wertebereich von \(A\).
+    Auch für reelle Matrizen wird der Wertebereich über \(\C^n\) gebildet.
+\end{karte}
+
+\begin{karte}{Rayleigh-Quotient Eigenschaften}
+    Es gilt 
+    \begin{enumerate}
+        \item \( \varrho(\gamma x) = \varrho(x) \) für alle \(\gamma \neq 0, \gamma \in \C\).
+        \item \( \lambda(A) \subset \mathcal{F}(A) \), d. h. alle Eigenwerte liegen im Wertebereich.
+        \item Für normale Matrizen gilt \( \mathcal{F}(A) = \conv(\lambda(A)) \).
+    \end{enumerate}
+\end{karte}
+
+\begin{karte}{Rayleigh-Ritz}
+    Ist \( A\in \C^{n,n} \) hermitesch, dann gilt 
+    \begin{enumerate}
+        \item \( \lambda_{\min} \leq \varrho(x) \leq \lambda_{\max} \),
+        \item \(\lambda_{\max} = \max_{x\neq 0} \varrho(x) \), 
+        \item \( \lambda_{\min} = \min_{x\neq 0} \varrho(x) \).
+    \end{enumerate}
+\end{karte}
+
+\begin{karte}{Bendixon-Hirsch}
+    Für \( A\in \C^{n,n} \) gelte für \( \mu_n \leq \mu_1 \) und 
+    \( \tau_n \leq \tau_1 \) 
+    \[ \lambda \left( \frac{1}{2} (A + A^H) \right) \subset [\mu_n, \mu_1] \quad \text{und} 
+    \quad \lambda \left( \frac{1}{2i} (A - A^H) \right) \subset [\tau_n, \tau_1]. \]
+
+    Dann ist \( \mathcal{F}(A) \subset [\mu_n, \mu_1] \times i[\tau_n, \tau_1] \).
+\end{karte}
+
+\subsection{Potenzenmethode}
+
+\begin{karte}{TODO}
+    Es sei \( A\in \C^{n,n} \) diagonalisierbar mit \( X^{-1} A X = \Lambda = \diag(\lambda_1, \ldots, \lambda_n), 
+    X = [x_1 \cdots x_n], ||x_i|| = 1 \) und es gelte 
+    \[ \eta := \frac{\abs{\lambda_2}}{\abs{\lambda_1}} < 1. \]
+    Ist für \( a := X^{-1}y_0, a = [\alpha_1 \cdots \alpha_n]^T \) die erste Komponente \( \alpha_1 \neq 0 \), 
+    dann gilt für \( y_{k+1} = A y_k \):
+    \begin{enumerate}
+        \item \( y_k = \lambda_1^k [\alpha_1 x_1 + \mathcal{O}(\eta^k)] \) (\(y_k/\lambda_1^k\) konvergiert 
+        gegen einen Eigenvektor von \(A\)).
+        \item Für die Rayleigh-Quotienten gilt \( \varrho_A(y_k) = \lambda_1 + \mathcal{O}(\eta^k) \).
+        \item Falls \(A\) normal ist, gilt \( \varrho_A(y_k) = \lambda_1 + \mathcal{O}(\eta^{2k}) \).
+    \end{enumerate}
+\end{karte}
+
+\begin{karte}{Potenzenmethode}
+    \begin{tabbing}
+        \(y_0 \neq 0\) gegebener Startvektor, \(y_0 = y_0 / ||y_0||\) \\
+        for \= \( k = 0,1,\ldots \) do \\
+        \> \( z_{k+1} = A y_k \) \\
+        \> \( \varrho_k = y_k^H z_{k+1} \) \\
+        \> \( y_{k+1} = \frac{1}{||z_{k+1}||} z_{k+1}\) \\
+        end for
+    \end{tabbing}
+    Methode ist langsam, wenn \( \eta \) nahe bei eins ist. 
+    Man kann außerdem nur den betragsgrößten Eingenwert und zugehörigen 
+    Eigenvektor berechnen. 
+\end{karte}
+
+\begin{karte}{Inverse Potenzenmethode mit Shift}
+    \begin{tabbing}
+        \( \mu \in \C \) gegebener Shift, \(y_0 \neq 0\) gegebener Startvektor, \(y_0 = y_0 / ||y_0||\) \\
+        Berechne die LR-Zerlegung von \( \mu I - A \)\\
+        for \= \( k = 0,1,\ldots \) do \\
+        \> Löse \( (\mu I - A) z_{k+1} = y_k \) mit der LR-Zerlegung \\
+        \> \( y_{k+1} = \frac{1}{||z_{k+1}||} z_{k+1}\) \\
+        \> \( \varrho_{k+1} = \varrho_A(y_{k+1}) = y_{k+1}^H A y_{k+1} \) \\
+        end for
+    \end{tabbing}
+\end{karte}
+
+\begin{karte}{Rayleigh-Quotienten Iteration}
+    \begin{tabbing}
+        \( \mu_0 \in \C \) gegebener Shift, \(y_0 \neq 0\) gegebener Startvektor, \(y_0 = y_0 / ||y_0||\) \\
+        for \= \( k = 0,1,\ldots \) do \\
+        \> Löse \( (\mu_k I - A) z_{k+1} = y_k \) \\
+        \> \( y_{k+1} = \frac{1}{||z_{k+1}||} z_{k+1}\) \\
+        \> \( \mu_{k+1} = \varrho_A(y_{k+1}) = y_{k+1}^H A y_{k+1} \) \\
+        end for
+    \end{tabbing}
+    
+    Ist \(A\) normal, dann konvergiert die Folge \( (\mu_k)_k \) der Rayleigh-Quotienten Iteration 
+    lokal kubisch gegen einen Eigenwer von \(A\), d. h., wenn die Folge \(y_k\) gegen einen Eigenvektor 
+    konvergiert, dann konvergiert \(\mu_k\) gegen den zugehörigen Eigenwert.
 \end{karte}
