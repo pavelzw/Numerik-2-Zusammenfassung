@@ -195,6 +195,257 @@
     \end{tabbing}
     
     Ist \(A\) normal, dann konvergiert die Folge \( (\mu_k)_k \) der Rayleigh-Quotienten Iteration 
-    lokal kubisch gegen einen Eigenwer von \(A\), d. h., wenn die Folge \(y_k\) gegen einen Eigenvektor 
+    lokal kubisch gegen einen Eigenwert von \(A\), d. h., wenn die Folge \(y_k\) gegen einen Eigenvektor 
     konvergiert, dann konvergiert \(\mu_k\) gegen den zugehörigen Eigenwert.
+\end{karte}
+
+\subsection{QR-Algorithmus}
+
+\begin{karte}{}
+    Sei \( u_1 \) der Eigenvektor zum betragsgrößten Eigenwert, 
+    \( \mathcal{S}_1 = u_1^\bot = \set{u \in \C^n \;|\; u_1^H u = 0} \)
+    sowie \( P_1 \) der Orthogonalprojektor \( P_1 = I - u_1 u_1^H \) auf \( \mathcal{S}_1 \).
+    
+    Ist \( U^H A U = R = D + N \) die Schurform von \(A\) und \( A_1 := P_1 A \), 
+    dann ist \( U^H A_1 U =\left[ \begin{matrix}
+        0 & \\
+        & I
+    \end{matrix}\right] R \) die Schurform von \(A_1\). 
+    Insbesondere hat \( A_1 \) die Eigenwerte \( 0, \lambda_2,\ldots, \lambda_n \).
+\end{karte}
+
+\begin{karte}{Simultane Iteration}
+    \begin{tabbing}
+        \( U_0 \in \C^{n,m} \) unitär, \(U_0^H U_0 = I_m, A_0 = A\) \\
+        for \= \( k = 0,1,\ldots \) do \\
+        \> Setze \( Y_{k+1} = A U_k \) \\
+        \> Berechne die QR-Zerlegung \( Y_{k+1} = U_{k+1} R_{k+1} \) \\
+        \> \( A_{k+1} = U_{k+1}^H A U_{k+1} \) \\
+        end for
+    \end{tabbing}
+\end{karte}
+
+\begin{karte}{Simultane Iteration Konvergenz}
+    Sei \( A = X \Lambda X^{-1} \) diagonalisierbar, alle Eigenwerte von \(A\) 
+    paarweise betragsmäßig verschieden und alle Hauptuntermatrizen von \( X \)
+    (\(X_{1:j, 1:j}\)) nicht singulär. Dann konvergiert die Folge \( (A_k)_k = U_k^H A U_k \)
+    mit \( U_k \) aus dem Algorithmus der simultanen Iteration, \( U_0 = I \), 
+    gegen die Schurform von \(A\), 
+    \[ U_k^H A U_k \rightarrow R, \quad \diag(R) = \diag(\lambda_1, \ldots, \lambda_n). \]
+\end{karte}
+
+\begin{karte}{QR-Algorithmus}
+    \begin{tabbing}
+        \( A_0 = A \) \\
+        for \= \( k = 0,1,\ldots \) do \\
+        \> Berechne die QR-Zerlegung \( A_k = Q_k R_k \) \\
+        \> Setze \( A_{k+1} = R_k Q_k \) \\
+        end for
+    \end{tabbing}
+    Sollte in dieser Form nicht angewendet werden, 
+    da untere Nebendiagonalelemente der Schurform mit 
+    Konvergenzfaktor \( \eta_m = \abs{\lambda_{m+1} / \lambda_m} \)
+    gegen Null konvergieren. Wenn \( \eta_m \approx 1 \), ist dies sehr langsam.
+\end{karte}
+
+\begin{karte}{QR-Algorithmus mit Shifts}
+    \begin{tabbing}
+        \( A_0 = A \) \\
+        for \= \( k = 0,1,\ldots \) do \\
+        \> Wähle einen Shift \(\mu_k\) \\
+        \> Berechne die QR-Zerlegung \( A_k - \mu_k I = Q_k R_k \) \\
+        \> Setze \( A_{k+1} = R_k Q_k + \mu_k I \) \\
+        end for
+    \end{tabbing}
+\end{karte}
+
+\begin{karte}{QR-Algorithmus mit mehrfachen Shifts}
+    Shiftpolynome \[ f_k(\lambda) = \prod_{i=1}^r (\lambda - \mu_i^{(k)}). \]
+    Ein Mehrfachshift vom Grad \(r\) ist äquivalent zu einer Folge von \(r\) 
+    Mehrfachshifts vom Grad 1.
+    \begin{tabbing}
+        \( A_0 = A \) \\
+        for \= \( k = 0,1,\ldots \) do \\
+        \> Wähle ein Shiftpolynom \(f_k\) \\
+        \> Berechne die QR-Zerlegung \( f(A_k) = Q_k R_k \) \\
+        \> Setze \( A_{k+1} = Q_k^H A_k Q_k \) \\
+        end for
+    \end{tabbing}
+\end{karte}
+
+\begin{karte}{Eigenschaften Mehrfachshifts}
+    Für den QR-Algorithmus mit mehrfachen Shifts gilt 
+    \begin{align*}
+        A_k &= U_k^H A U_k, &U_k = Q_0 \cdots Q_{k-1}, \\
+        p_k(A) &= \prod_{i=0}^k f_i(A) = U_{k+1} T_{k+1}, &T_{k+1} = R_k \cdots R_0.
+    \end{align*}
+\end{karte}
+
+\subsection{Effiziente Implementierung}
+
+\begin{karte}{Householder-Matrix}
+    Für \( u\in \C^n \) mit \( ||u|| = 1 \) heißt die 
+    hermitesche und unitäre Matrix \( P = I - 2 u u^H \in \C^{n,n} \) 
+    Householder-Matrix. \(u\) kann so gewählt werden, dass für ein gegebenes 
+    \( x\in \C^n, x\neq 0 \)
+    \[ Px = \alpha e_1, \alpha \in \C \]
+    gilt, wobei 
+    \[ \abs{\alpha} = ||x||, \quad u = \frac{x-\alpha e_1}{||x-\alpha e_1||}. \]
+\end{karte}
+
+\begin{karte}{Obere Hessenberg-Form}
+    Jede Matrix \(A\in \C^{n,n}\) kann durch \(n-2\) Householder-Transformationen 
+    auf obere Hessenberg-Form transformiert werden 
+    \[ U^H A U = H = \left[ \begin{matrix}
+        h_{11} & \cdots & h_{1,n-1} & h_{1,n} \\
+        h_{21} & \ddots & \vdots & \vdots \\
+        & \ddots & h_{n-1, n-1} & h_{n-1,n} \\
+        0 & & h_{n,n-1} & h_{n,n}
+    \end{matrix} \right], U = U_1 \cdots U_{n-2} \]
+    mit Housholder-Matrizen \(U_1, \ldots, U_{n-2}\). 
+
+    Der Aufwand für die Transformation beträgt bei einer allgemeinen Matrix 
+    \(\frac{10}{3} n^3\) und bei einer hermiteschen Matrix \( \frac{4}{3}n^3 \)
+    komplexe Operationen.
+\end{karte}
+
+\begin{karte}{QR-Zerlegung Hessenberg-Matrix}
+    Es sei \(H\) eine obere Hessenberg-Matrix und 
+    \[ H = QR, \quad \tilde{H} = RQ. \]
+    Dann ist \(\tilde{H}\) ebenfalls eine obere Hessenberg-Matrix.
+
+    Die Berechnung der QR-Zerlegung einer oberen Hessenberg-Matrix 
+    kostet nur \( \mathcal{O}(n^2) \) Operationen statt \(\mathcal{O}(n^3)\) 
+    bei einer voll besetzten Matrix.
+\end{karte}
+
+\begin{karte}{Deflation}
+    Verschwindet während des Algorithmus ein Nebendiagonalelement von 
+    \(H_k\), dann hat \(H_k\) die Form 
+    \[ H_k = \left[ \begin{matrix}
+        H_{11} & H_{12} \\ 0 & H_{22}
+    \end{matrix} \right], H_{11} \in \C^{p,p}, 1\leq p < n. \]
+    Das Poblem zerfällt in zwei kleinere Teilprobleme. 
+    Man spricht dann auch von \textit{Deflation}.
+\end{karte}
+
+\begin{karte}{Hessenberg mit Shift}
+    Es sei \(\mu\) ein Eigenwert einer unredizierten oberen Hessenberg-Matrix \(H\).
+    Ist \(H - \mu I = QR\) die QR-Zerlegung der geshifteten Matrix und \( \tilde{H} = RQ + \mu I \), 
+    dann gilt \( \tilde{h}_{n,n-1} = 0 \) und \( \tilde{h}_{n,n} = \mu \).
+\end{karte}
+
+\begin{karte}{Wilkinson-Shifts}
+    \( \mu \) wird als derjenige Eigenwert von 
+    \[ \left[ \begin{matrix}
+        h_{n-1,n-1} & h_{n-1,n} \\ h_{n,n-1} & h_{n,n}
+    \end{matrix} \right] \] 
+    gewählt, der näher an \(h_{n,n} \) liegt. Ist \(H\) hermitesch, 
+    also tridiagonal, lässt sich der Wilkinson-Shift durch 
+    \[ \mu_k = h_{n,n} + d - \sign(d) \sqrt{d^2 + (h_{n-1,n})^2} \]
+    berechnen, wobei \( d = (h_{n-1,n-1} - h_{n,n})/2 \) ist.
+\end{karte}
+
+\begin{karte}{Komplexe Shifts}
+    Ist \(A\) und damit auch die Hessenberg-Matrix \(H\) 
+    nicht symmetrisch und reell, kann \(A\) Paare konjugiert komplexer 
+    Eigenwerte haben. Hier bieten sich Mehrfachshifts an, bei denen ein konjugiert 
+    komplexes Paar von Shifts verwendet wird. Dadurch lässt sich komplexe Arithmetik 
+    vermeiden.
+\end{karte}
+
+\begin{karte}{Implizites Q-Theorem}
+    Seien \( Q = [q_1 \cdots q_n] \) und \(U = [u_1 \cdots u_n]\) 
+    unitäre Matrizen, für die 
+    \[ Q^H A Q = H \quad \text{und} \quad U^H A U = G \] 
+    obere Hessenberg-Form haben. 
+    Ist \( u_1 = q_1 \) und \(H\) unrediziert, dann gilt 
+    \( Q = UD \) mit einer unitären Diagonalmatrix \(D\) und 
+    \( \abs{h_{j,j-1}} = \abs{g_{j,j-1}} \) für \( j= 2,\ldots, n \).
+
+    Man kann um \( A_{k+1} = Q_k^H A_k Q_k \) aus \(A_k\) 
+    im QR-Algorithmus mit einfachem Shift \(\mu_k\) zu berechnen 
+    lediglich 
+    \begin{enumerate}
+        \item die erste Spalte von \( Q_k \) (die der normierten ersten Spalte von \(A_k - \mu_k I\) entspricht) 
+        berechnen muss und 
+        \item die übrigen Spalten von \( Q_k \) so wählt, dass \(Q_k\) unitär ist und \( A_{k+1} \) eine unredizierte obere Hessenberg-Matrix ist.
+    \end{enumerate}
+    Dies wird beim \textit{buldge chasing} verwendet.
+\end{karte}
+
+\subsection{Singulärwertzerlegung}
+
+\begin{karte}{Obere Bidiagonalform}
+    Zu \( A\in \C^{m,n} \) mit \( m\geq n \) existieren unitäre 
+    Matrizen \( P, Q \) mit 
+    \[ PAQ = \left[ \begin{matrix}
+        B \\ 0
+    \end{matrix} \right], \qquad B = \left[ \begin{matrix}
+        d_1 & f_1 & 0 \cdots & 0 \\
+        0 & d_2 & \ddots & \ddots & \vdots \\
+        \vdots & \ddots & \ddots & \ddots & 0 \\
+        \vdots & & \ddots & \ddots & f_{n-1} \\
+        0 & \cdots & \cdots & 0 & d_n
+    \end{matrix} \right]. \]
+    Dies lässt sich über geeignete Householder-Transformationen erreichen.
+\end{karte}
+
+\begin{karte}{Bidiagonalisierung von \(A\in \C^{m,n}\)}
+    \begin{tabbing}
+        { \texttt{function house}\((x)\) liefer \(u\) mit \((I - 2 u u^H)x = \alpha e_1\)} \\
+        for \= \( j = 1,\ldots,n \) do \\
+        \> \(u = \texttt{house}(A_{j:m, j})\) \\
+        \> if \= \(j \leq n-2\) then \\
+        \> \> \(u = \texttt{house}(A_{j,j+1:n}^T)\) \\
+        \> \> \( A-{j:m, j+1:n} = A_{j:m,j+1:n}(I_{n-j} - 2 u u^H) \) \\
+        \> end if 
+        end for
+    \end{tabbing}
+\end{karte}
+
+\begin{karte}{Golub-Kahan Schritt zur Singulärwertzerlegung}
+    \begin{tabbing}
+        Gegeben sei Bidiagonalmatrix \(A \in \C^{m,n}\) \\
+        Zu gegebenem Shift \(\mu\) berechne erste Spalte von \(A^H A - \mu I: t = \left[ \begin{matrix}
+            \abs{a_{11}}^2 - \mu \\ a_{11} \overline{a_{12}}
+        \end{matrix} \right]\) \\
+        for \= \( j = 1 ,\ldots,n-1 \) do \\
+        \> \(u = \texttt{house}(t)\) \\
+        \> \( \tilde{j} = \max\{1, j-1\} \) \\
+        \> \( A_{\tilde{j}:j+1, j:j+1} = A_{\tilde{j}:j+1, j:j+1}(I - 2 u u^H) \) \\
+        \> \( u = \texttt{house}(A_{j:j+1, j}) \) \\
+        \> \( \tilde{j} = \min\{j+2, n\} \) \\
+        \> \( A_{j:j+1, j:\tilde{j}} = (I - 2 u u^H) A_{j:j+1, j:\tilde{j}} \) \\
+        \> if \=\(j < n-1\) then \\
+        \> \> \( t = A_{j,j+1:j+2}^T \) \\
+        \> end if \\
+        end for
+    \end{tabbing}
+\end{karte}
+
+\subsection{Trägheit, Bisektionsverfahren}
+
+\begin{karte}{Kongruenztransformation}
+    Für \( A\in \C^{n,n} \) und eine nicht singuläre Matrix \(T\in \C^{n,n}\) 
+    heißt die Abbildung \( A \mapsto T^H A T \) eine \textit{Kongruenztransformation}. 
+    \(A\) und \( T^H A T \) werden kongruent genannt.
+\end{karte}
+
+\begin{karte}{Trägheit}
+    Für \( A\in \C^{n,n} \) hermitesch heißt das Triple \( in(A) = (\pi, \nu, \delta) \) 
+    der Anzahl der positiven, negativen und Eigenwerten gleich Null von \(A\) 
+    die \textit{Trägheit} (inertia) von \(A\).
+
+    Sei \(A\) hermitesch und \(T\) nicht singulär. Dann haben \(A\) und \(T^H A T\) 
+    dieselbe Trägheit.
+\end{karte}
+
+\begin{karte}{Tridiagonales Spektrum Slicing}
+    Die Werte \(d_j\), die in Gleitkommaarithmetik mit dem Tridiagonales Spektrum Slicing Algorithmus 
+    berechnet werden, haben dieselben Vorzeichen wie die Werte \( \widehat{d}_j \), 
+    die in exakter Arithmetik ausgehend von einer Tridiagonalmatrix \(\widehat{A}\) 
+    berechnet werden, wobei 
+    \[ \widehat{\alpha}_j = \alpha_j, \qquad \abs{\widehat{\beta}_j} = \abs{\beta_j}(1+\epsilon_j), 
+    \abs{\epsilon_j} \leq 2.5\epsilon + \mathcal{O}(\epsilon^2). \]
 \end{karte}
