@@ -1,0 +1,243 @@
+\section{Fouriertransformation}
+
+\begin{karte}{Fourierreihe}
+    Die Fourierreihe einer \( 2\pi \)-periodischen Funktion \(f\) 
+    mit Werten in \(\R\) oder \(\C\) ist 
+    \[ f(\xi) \sim \sum_{k\in\Z} \widehat{f}(k) e^{ik\xi}, \]
+    wobei die Fourierkoeffizienten durch 
+    \[ \widehat{f}(k) = \frac{1}{2\pi} \int_0^{2\pi} f(\xi) e^{-ik\xi} d\xi \]
+    definiert sind.
+\end{karte}
+
+\begin{karte}{Parseval'sche Gleichung}
+    Unter bestimmten Bedingungen stimmt \(f\) mit seiner Fourierreihe überein 
+    und es gilt die Parseval'sche Gleichung
+    \[ \sum_{k\in\Z} \abs{\widehat{f}(k)}^2 = \frac{1}{2\pi} \abs{f(\xi)}^2 d\xi. \]
+\end{karte}
+
+\subsection{DFT, trigon. Interpol.}
+
+\begin{karte}{Trapezregel Approximation}
+    Sei \(f\) \(2\pi\)-periodisch. Wir benutzen die äquidistanten Werte 
+    \( \xi_j = \frac{2\pi j}{N} \). Es gilt \( f(\xi_N) = f(\xi_0) \)
+    und die Trapezregel approximiert das Integral wie folgt 
+    \[ \widehat{f}_N(k) = \frac{1}{N} \sum_{j=0}^{N-1} f(\xi_j) e^{-ik\xi_j} 
+    = \frac{1}{N} \sum_{j=0}^{N-1} f(\xi_j) \omega_N^{kj}, \]
+    wobei \( \omega_N = e^{-\frac{2\pi i}{N}} \). Wenn \(N\) klar, 
+    schreiben wir \(\omega\) statt \(\omega_N\). 
+\end{karte}
+
+\begin{karte}{Diskrete Fouriertransformation}
+    Die lineare Abbildung \( \abb{\Fcal_n}{\C^N}{\C^N} \)
+    definiert durch 
+    \[ \Fcal_N x = \widehat{x}, \quad 
+    \widehat{x}_k = \frac{1}{N} \sum_{j=0}^{N-1} \omega_N^{kj} x_j \]
+    heißt \textit{diskrete Fouriertransformation}. 
+    Die zugehörige Matrix \( F_N = \frac{1}{N} (\omega_N^{kj})_{kj} \) 
+    heißt \textit{Fouriermatrix}.
+
+    Somit folgt \( \widehat{f}_N = (\widehat{f}_N(k))_k = \Fcal_N(f(\xi_j))_k \).
+\end{karte}
+
+\begin{karte}{Orthogonalität}
+    Es gilt \( F_N \overline{F_N} = N^{-1} I_N \) 
+    oder äquivalent 
+    \[ \sum_{k=0}^{N-1} \omega_N^{kl} \overline{\omega}_N^{km} = 
+    \begin{cases}
+        N, & l \equiv m \mod N, \\
+        0, & \text{sonst}.
+    \end{cases} \]
+\end{karte}
+
+\begin{karte}{Inverse diskrete Fouriertransformation}
+    Es gilt \( F_N^{-1} = N \overline{F_N} = N F_N^H \) bzw. 
+    \[ x_j = \sum_{k=0}^{N-1} \omega_N^{-kj} \widehat{x}_k, j=0,\ldots, N-1. \]
+\end{karte}
+
+\begin{karte}{Parseval'sche Gleichung diskret}
+    In der Euklidischen Norm \( ||\cdot|| \) gilt 
+    \[ || \sqrt{N} \Fcal_N x||= ||x||, \]
+    d. h. \( \sqrt{N} \Fcal_N \) ist eine Isometrie oder 
+    \[ N \sum_{k=0}^{N-1} \abs{\widehat{x}_k}^2 = \sum_{k=0}^{N-1} \abs{x_k}^2. \]
+\end{karte}
+
+\begin{karte}{Symmetrie}
+    Die Fouriermatrix ist symmetrisch, also 
+    \( F_n = F_N^T \). 
+\end{karte}
+
+\begin{karte}{Aliasing}
+    Ist die Reihe \(\sum_{k\in\Z} \widehat{f}(k)\) absolut konvergent, dann gilt 
+    \[ \widehat{f}_N(k) = \sum_{j\in\Z} \widehat{f}(k+jN). \]
+
+    Die diskrete Fouriertransformation einer endlichen Fourierreihe 
+    \[ h(\xi) = \sum_{\abs{k}\leq K} a_K e^{ik\xi} \]
+    berechnet die entsprechenden Fourierkoeffizienten exakt, falls \(K<N/2\). 
+    Dann ist nämlich 
+    \[ \widehat{h}_N(k) = \sum_{j\in\Z} \widehat{h}(k+jN) = \widehat{h}(k), k = -N/2,\ldots, N/2-1, \]
+    da \(\widehat{h}(k) = a_k\) für \(\abs{k} \leq K\) und \(\widehat{h}(k) = 0\) sonst.
+\end{karte}
+
+\begin{karte}{Fehlerabschätzung}
+    Ist \(\abb{f}{\R}{\C}\) \(p\)-mal stetig differenzierbar mit \(p\geq 2\) und 
+    \(2\pi\)-periodisch, dann gilt 
+    \[ \widehat{f}_N(k) - \widehat{f}(k) = \mathcal{O}(N^{-p}), \abs{k} \leq N/2. \]
+    Insbesondere gilt für \(h=2\pi/N\)
+    \[ h \sum_{j=0}^{N-1} f(\xi_j) - \int_0^{2\pi} f(\xi)d\xi = \mathcal{O}(h^p). \]
+\end{karte}
+
+\begin{karte}{Trigonometrisches Interpolationspolynom}
+    Zu gegebenen Werten \(y_j, j=0,\ldots, N-1\) und \(N\) gerade hat 
+    \[ t_N(\xi) = \sum_{k=-N/2}^{N/2}{}^{'} \widehat{y}_k e^{ik\xi} 
+    := \frac{1}{2} \left( \widehat{y}_{-N/2} e^{-i\xi N/2} + \widehat{y}_{N/2} e^{i\xi N/2} \right) 
+    + \sum_{\abs{k} < N/2} \widehat{y}_k e^{ik\xi} \]
+    die Interpolationseigenschaft \(t_N(\xi_j) = y_j\).
+\end{karte}
+
+\begin{karte}{Fehler bei trigonometrischer Interpolation}
+    Falls \( (\widehat{f}(n))_{n\in\Z} \) absolut summierbar ist, gilt 
+    \[ \abs{t_N(\xi) - f(\xi)} \leq 2 \sum_{\abs{n}\geq N/2}{}^{'} \abs{\widehat{f}(n)} \;\forall \xi. \]
+\end{karte}
+
+\subsection{Schnelle Fouriertransformation}
+
+\begin{karte}{Rekursionsformeln}
+    Zu geradem \(N\) und gegebenen Folgen \(u,v\in\C^{N/2}\) sei 
+    \[ x = [u_0 v_0 u_1 v_1 \cdots u_{N/2-1} v_{N/2-1}] \in \C^N \]
+    definiert. Dann gilt für \(k=0,1,\ldots, N/2-1\)
+    \begin{align*}
+        (\Fcal_N x)_k &= \frac{1}{2} \left( (\Fcal_{N/2} u)_k + \omega_N^k (\Fcal_{N/2} v)_k \right), \\
+        (\Fcal_N x)_{k+N/2} &= \frac{1}{2} \left( (\Fcal_{N/2} u)_k - \omega_N^k (\Fcal_{N/2} v)_k \right).
+    \end{align*}
+\end{karte}
+
+\begin{karte}{Aufwand FFT}
+    \(\Fcal_N x\) kann für \(N=2^L\) mit \(1/2 N\log_2N\) komplexen Multiplikationen und \(N \log_2N\) 
+    komplexen Additionen berechnet werden.
+\end{karte}
+
+\begin{karte}{Faltung}
+    Seien \(x,y\in \C^N\) (periodisch fortgesetzt). Die \textit{Faltung} \(x\star y \in \C^N\) ist definiert 
+    durch 
+    \[ (x \star y)_k = \frac{1}{N} \sum_{j=0}^{N-1} x_{k-j} y_j. \]
+
+    Es gilt \(\Fcal_N(x\star y) = \Fcal_N x \bullet \Fcal_N y\).
+    Außerdem ist Faltung kommutativ und assoziativ.
+
+    Es folgt \( x\star y = \Fcal_N^{-1}(\Fcal_N x \bullet \Fcal_N y) \).
+\end{karte}
+
+\begin{karte}{Symmetrie}
+    \begin{enumerate}
+        \item Für \(x=[x_0 x_1 \ldots x_{N-1}] \in \R^N\) periodisch fortgesetzt gilt 
+        \[ \widehat{x}_{-k} = \overline{\widehat{x}_k}, k \in \Z. \]
+        \item Falls \(x\in \C^N\) eine gerade Folge ist (\(x_{-k} = x_k\)), so ist auch 
+        die Fourier-Transformierte \(\widehat{x}\) gerade. Falls \(x\) ungerade ist (\(x_{-k} = -x_k\)), 
+        so ist auch die Fourier-Transformierte ungerade.
+    \end{enumerate}
+\end{karte}
+
+\subsection{Inverses Faltungsproblem, Filter}
+
+\begin{karte}{Modellierung des Apparats}
+    Aus einem gemessenen Signal \(b\) welches aus einem Eingangssignal \(u\)
+    bestimmt wurde, wollen wir \(u\) bestimmen: 
+    \[ \int_{-\infty}^\infty a(\xi-\sigma) u(\sigma) d\sigma + \varepsilon(\xi) = b(\xi). \]
+    Bestenfalls weiß man 
+    \[ \abs{\varepsilon(\xi)} \leq M \text{ oder } \left( \int \abs{\varepsilon(\xi)}^2 \right)^{1/2} \approx \delta. \]
+\end{karte}
+
+\begin{karte}{Kompakter Träger}
+    \[ \supp a = \overline{\set{ \xi: a(\xi) \neq 0 }}. \]
+    Ohne Einschränkung gelte \( \supp a \subset [-\pi/2,\pi/2], \supp u \subset [-\pi/2,\pi/2] \).
+
+    Es folgt \( \supp(b-\varepsilon) \subset [-\pi, \pi] \).
+\end{karte}
+
+\begin{karte}{Inverses Faltungsproblem}
+    Wir wollen \( a\star u + \epsilon = b \) lösen. 
+    Verwenden wir den Faltungssatz, bekommen wir 
+    \[ \widehat{a}(n) \widehat{u}(n) + \widehat{\varepsilon}(n) = \widehat{b}(n) 
+    \Leftrightarrow \widehat{u}(n) = \frac{\widehat{b}(n)}{\widehat{a}(n)} - \frac{\widehat{\epsilon}(n)}{\widehat{a}(n)}. \]
+\end{karte}
+
+\begin{karte}{Tiefpassfilter}
+    Man kann die Fourierentwicklung abschneiden und 
+    \[ u_M(\xi) = \sum_{n=-M}^M \frac{\widehat{b}(n)}{\widehat{a}(n)} e^{in\xi} \] 
+    statt \(u\) verwenden. Hier können wir den Filter 
+    \[ \phi_M(n) = \begin{cases}
+        1, & \abs{n} \leq M, \\ 
+        0, & \text{sonst}
+    \end{cases} \]
+    verwenden. \(\phi_M\) ist hier ein Tiefpassfilter. 
+\end{karte}
+
+\begin{karte}{Weitere Möglichkeiten zur Lösung}
+    Nicht \(Au = b\) lösen, sondern nur 
+    \[ ||Au - b|| \leq || \varepsilon|| \]
+    fordern, wobei \( ||f|| = \left(\frac{1}{2\pi} \int_0^{2\pi} \abs{f(\xi)}^2 d\xi \right)^{1/2} \).
+    Wir wählen unter diesen vielen Lösungen jene mit 
+    \( ||u''|| = \min \) oder \(||u|| = \min\).
+
+    Es ergibt sich das Minimierungsproblem 
+    \[ ||Lu|| = \min, \]
+    \[ ||Au - b|| \leq \delta, \]
+    wobei \(L\) linear ist und \(||\varepsilon||\leq \delta\).
+    
+    Sei \(||b|| > \delta\). Dann gilt für die Lösung des Minimierungsproblems 
+    \[ u \neq 0, ||Au - b || = \delta. \]
+\end{karte}
+
+\subsection{Tychonoff-Regularisierung}
+
+\begin{karte}{Tychonoff-Regularisierung}
+    Man wählt einen Regularisierungsparameter \(\alpha > 0\) und 
+    löst das Minimierungsproblem 
+    \[ ||Au - b||^2 + \alpha ||Lu||^2 = \min \]
+    ohne Nebenbedingung. Im Grenzfall reduziert sich das Minimierungsproblem zu 
+    
+    \(\alpha \rightarrow 0: ||Au- b|| = 0, ||Lu||\) bel. groß,
+
+    \(\alpha \rightarrow \infty: ||Lu|| = 0, ||Au-b||\) bel. groß.
+\end{karte}
+
+\begin{karte}{Regularisierungsfilter}
+    Für festes \(\alpha > 0\) ist die Lösung des Minimierungsproblems 
+    \[ ||a \star u - b||^2 + \alpha ||u^{(p)}||^2 = \min, \]
+    gegeben durch die Fourierkoeffizienten 
+    \[ \widehat{u}(n) = \begin{cases}
+        \frac{\abs{\widehat{a}(n)}^2}{\abs{\widehat{a}(n)}^2 + \alpha n^{2p}} \frac{\widehat{b}(n)}{\widehat{a}(n)} 
+        =: \phi_\alpha(n) \frac{\widehat{b}(n)}{\widehat{a}(n)}, & \widehat{a}(n) \neq 0 \\
+        0, & \widehat{a}(n) = 0.
+    \end{cases} \]
+    \(\phi_\alpha\) heißt Regularisierungsfilter.
+\end{karte}
+
+\begin{karte}{Monotonie Minimierungsproblem}
+    Es sei \(u_\alpha\) die Lösung von 
+    \[ ||a \star u - b||^2 + \alpha ||u^{(p)}||^2 = \min \] 
+    zu gegebenem \(\alpha\). Dann ist 
+    \(\alpha \mapsto ||a \star u_\alpha - b|| \) monoton wachsend 
+    und \(\alpha \mapsto ||u_\alpha^{(p)}||\) monoton fallend.
+\end{karte}
+
+\begin{karte}{\(L^2\)-Norm des Minimierungsproblems}
+    Es sei \(N\) gerade und \(2\pi\)-periodische Funktionen \(u,b\) der Form 
+    \[ u(\xi) = \sum_{n=-N/2}^{N/2-1} \widehat{u}(n) e^{in\xi}, 
+    \quad b(\xi) = \sum_{n=-N/2}^{N/2-1} \widehat{b}(n) e^{in\xi} \]
+    gegeben. Dann ist in der gewichteten \(L^2\)-Norm 
+    \[ || a \star u - b||^2 = \frac{1}{N} \sum_{j=0}^{N-1} \abs{(a \star u)(\xi_j) - b(\xi_j)}^2. \]
+\end{karte}
+
+\begin{karte}{Lösung des Minimierungsproblems}
+    Sei \(N\) gerade. Unter allen trigonometrischen Polynomen 
+    \[ u_N(\xi) = \sum_{n=-N/2}^{N/2-1} \widehat{u}_N(n) e^{in\xi} \]
+    ist \(u_N\) die Lösung des Minimierungsproblems 
+    \[ ||a \star u - b||^2 + \alpha ||u^{(p)}||^2 = \min \] 
+    genau dann, wenn für \(n=-N/2, \ldots, N/2-1\) gilt 
+    \[ \widehat{u}(n) = \begin{cases}
+        \frac{\abs{\widehat{a}(n)}^2}{\abs{\widehat{a}(n)}^2 + \alpha n^{2p}} \frac{\widehat{b}(n)}{\widehat{a}(n)} 
+        =: \phi_\alpha(n) \frac{\widehat{b}(n)}{\widehat{a}(n)}, &\widehat{a}(n) \neq 0, \\
+        0, & \widehat{a}(n) = 0.
+    \end{cases} \]
+\end{karte}

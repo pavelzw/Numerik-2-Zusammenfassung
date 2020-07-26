@@ -198,18 +198,190 @@
 
 \subsection{Konjugierte Gradienten}
 
-\begin{karte}{}
+\begin{karte}{Allgemeines zum Galerkin-Verfahren}
+    Wenn die Koeffizientenmatrix hermitesch und 
+    positiv definit ist, dann können wir beim Lanczos-Verfahren 
+    einfach zwei Basen für \( \Kcal_m(A, b) \) 
+    und \( \Kcal(A, r_0) \) berechnen. 
 
+    Das so definierte Galerkin-Verfahren ist für \( A = A^H \)
+    positiv definit und ein Minimierungsverfahren in 
+    der Energienorm \(||x||_A = \sqrt{x^H Ax}\).
 \end{karte}
 
-\begin{karte}{}
-
+\begin{karte}{Fehlerabschätzung cg-Verfahren 1}
+    Ist \( \widehat{x} = A^{-1}b \) die Lösung 
+    des LGS \(Ax=b\), \(A = A^H\) positiv definit, 
+    \(x_m \in x_0 + \Kcal_m(A,r_0)\) 
+    die Galerkin-Iterierte (\(r_m \bot \Kcal_m(A, r_0)\)),
+    dann gilt für die Iterierten \(x_m\) des cg-Verfahrens 
+    \[ ||\widehat{x} - x_m||_A \leq ||\widehat{x} - x||_A \]
+    und 
+    \[ ||b - A x_m||_{A^{-1}} \leq ||b-Ax||_{A^{-1}} \]
+    für alle \(x \in x_0 + \Kcal_m(A, r_0)\).
 \end{karte}
 
-\begin{karte}{}
+\begin{karte}{Fehlerabschätzung cg-Verfahren 2}
+    Ist \(A = A^H\) positiv definit, so gilt für den Fehler 
+    der \(m\)-ten Iterierten des cg-Verfahrens 
+    \[ ||x_m - \widehat{x}||_A \leq \min_{\substack{p_m \in \mathcal{P}_m \\ p_m(0) = 1}} 
+    ||p_m(A)|| \; ||x_0 - \widehat{x}||_A. \]
 
+    Außerdem gilt 
+    \[ \min_{\substack{p_m \in \mathcal{P}_m \\ p_m(0) = 1}} 
+    ||p_m(A)|| \leq 2 \left( \frac{\sqrt{\kappa} - 1}{\sqrt{\kappa} + 1} \right)^m, \]
+    wobei \(\kappa = \kappa(A) = ||A|| \cdot ||A^+||\) die Konditionszahl von \(A\) bezeichnet.
 \end{karte}
 
-\begin{karte}{}
+\begin{karte}{cg-Verfahren aus Lanczos-Verfahren}
+    Man kann das cg-Verfahren direkt über das Lanczos-Verfahren herleiten: 
+    Für gegebenes \(x_0\) und \(r_0 = p_1 = b - Ax_0\) 
+    verwendetn wir für \( m=1,2,\ldots \) den Ansatz 
+    \begin{align*}
+        x_m &= x_{m-1} + \tau_m p_m, \\
+        r_m &= r_{m-1} - \tau_m A p_m, \\
+        p_{m+1} &= r_m - \mu_{m+1} p_m.
+    \end{align*}
+\end{karte}
 
+\begin{karte}{cg-Verfahren Eigenschaften}
+    Für die Vektoren aus dem cg-Verfahren gilt: 
+    \begin{enumerate}
+        \item \(r_m\) ist Residuenvektor zu \(x_m\), \(r_m = b - A x_m\).
+        \item Die Residuenvektoren \( r_0, \ldots, r_m \) und die Suchrichtungen 
+        \(p_1, \ldots, p_m\) des cg-Verfahrens erfüllen 
+        für \( m \leq \dim \Kcal_n(A, r_0) \), falls \(\tau_j \neq 0, j=1,\ldots, m\), 
+        \[ \spann\set{ r_0,\ldots, r_{m-1} } = 
+        \spann\set{p_1, \ldots, p_m} = \Kcal_m(A, r_0). \]
+        \item Wählt man 
+        \[ \tau_m = \frac{r_{m-1}^H r_{m-1}}{ p_m^H A p_m} = \frac{\delta_m}{\delta_m'} \]
+        und 
+        \[ \mu_{m+1} = \frac{p_m^H A r_m}{p_m^H A p_m} = - \frac{r_m^H r_m}{r_{m-1}^H r_{m-1}} = - \frac{\delta_{m+1}}{\delta_m}, \]
+        so sind Residuenvektoren orthogonal, \( r_k^H r_j = 0 \) 
+        für \(j\neq k\) und die Suchrichtungen \(A\)-konjugiert, 
+        \(p_k^H A p_j = 0, j \neq k\). Insbesondere ist \(x_m\) die
+        cg-Iterierte.
+    \end{enumerate}
+\end{karte}
+
+\begin{karte}{cg-Verfahren}
+    \begin{tabbing}
+        Wähle \( x_0 \in \C^n \), setze \(r_0 = b - A x_0\) und wähle Toleranz \(\texttt{tol} > 0\) \\
+        Initialisiere \(m = 1, p_1 = r_0, \delta_1 = r_0^H r_0\) \\
+        while \= \(\delta_m \geq \texttt{tol}^2 \) do \\
+        \> Berechne \(\delta_m' = p_m^H A p_m\) \\
+        \> Berechne \(\tau_m = \delta_m / \delta_m'\) \\
+        \> Setze \(x_m = x_{m-1} + \tau_m p_m\) \\
+        \> Berechne \(r_m = r_{m-1} - \tau_m A p_m\) \\
+        \> Berechne \( \delta_{m+1} = r_m^H r_m, \mu_{m+1} = -\delta_{m+1}/\delta_m \) \\
+        \> Setze \( p_{m+1} = r_m - \mu_{m+1} p_m \) \\
+        \> Ersetze \(m\) durch \(m+1\) 
+        end while
+    \end{tabbing}
+    Das cg-Verfahren bewirkt eine schnelle Fehlerreduktion, 
+    wenn die Kondition von \(A\) klein ist oder die Eigenwerte 
+    von \(A\) in eineigen wenigen Clustern liegen.
+
+    Falls die Eigenschaften diese Eigenschaften nicht haben, 
+    kann man mit einem äquivalenten LGS mit besseren Eigenschaften 
+    arbeiten (Vorkonditionierung).
+\end{karte}
+
+\subsection{Basierend auf Lanczos}
+
+\begin{karte}{QMR-Verfahren (quasi minimal residual method)}
+    Lanczos-Verfahren mit (M)-Bedingung
+    \begin{tabbing}
+        Wähle \( x_0 \in \C^n \), setze \(r_0 = b - A x_0, \beta = \rho_0 = ||r_0||\) \\
+        Setze \( p_0 = p_{-1} = 0 \)  \\
+        Starte den nichtsymmetrischen Lanczos-Prozess mit geeignetem \\
+        linken Startvektor \(c\) und \(v_1 = r_0/\beta\) \\
+        Am Ende \= des \(m\)-ten Schritts ergänze folgende Zeilen:\\
+        \> Berechne \( \theta_m, \eta_m, \zeta_m, \rho_m, \tau_m \) \\
+        \> Setze \( p_m = (v_m - \eta_m p_{m-1} - \theta_m p_{m-2})/\zeta_m \) \\
+        \> Berechne \( x_m = x_{m-1} + \tau_m p_m \)
+    \end{tabbing}
+    Kosten sind sieben \textsc{SAXPYs}, zwei Skalarprodukte \\
+    und zwei Matrix-Vektormultiplikationen pro Schritt.
+\end{karte}
+
+\begin{karte}{Lösung für Koeffizienten des BiCG-Verfahrens}
+    Seien \(V_m, W_m\) die Matrizen aus dem Lanczos-Prozess 
+    und \(x_m = V_m y_m\). Dann existiert eine Lösung von (G) 
+    genau dann, wenn \(T_m\) nicht singulär ist. In diesem Fall ist 
+    \(T_m y_m = \beta e_1\).
+\end{karte}
+
+\begin{karte}{BiCG-Verfahren Vektoren}
+    Führen wir wie bei QMR Suchrichtungen ein, so erreichen wir die 
+    kurze Rekursion für \(x_m\): Wegen \( T_m^{-1} = U_m^{-1} E_m^{1} L_m^{-1} \) gilt 
+    \[ x_m = P_m z_m, \quad P_m = V_m U_m^{-1}, \quad z_m = \beta E_m^{-1} L_m^{-1} e_1. \]
+    Wir können \(p_m\) mit einer Rekursionsformel berechnen: 
+    \[ p_1 = v_1, \quad p_m = v_m - \mu_m p_{m-1}.\]
+
+    Zu gewissen Indizes können evtl. keine Iterierten existieren, die (G) 
+    erfüllen. Man kann um schlechte/instabile Iterierte vermeiden, 
+    indem man die BiCG-Iterierten aus QMR-Iterierten berechnet. 
+\end{karte}
+
+\begin{karte}{BiCG-Verfahren (biconjugate gradient method)}
+    \begin{tabbing}
+        Wähle \( x_0 \in \C^n \), setze \(r_0 = b - A x_0, \beta = \rho_0 = ||r_0||\) \\
+        Setze \( p_0 = p_{-1} = 0 \)  \\
+        Starte den nichtsymmetrischen Lanczos-Prozess mit geeignetem \\ 
+        linken Startvektor \(c\) und \(v_1 = r_0/\beta\) \\
+        Am Ende des \(m\)-ten Schritts ergänze folgende Zeilen:\\
+        if \= \(m=1\) then \\
+        \> \(\varepsilon_1 = \alpha_1, \tau_1 = \beta/\varepsilon_1\) \\
+        else \\
+        \> {Berechne den Update der LDU-Zerlegung von \(T_m\)} \\
+        \> \( \nu_m = \gamma_m/\varepsilon_{m-1}, \mu_m = \beta_m / \varepsilon_{m-1}, \varepsilon_m = \alpha_m - \nu_m \beta_m \) \\
+        \> Setze \( \tau_m = -\varepsilon_{m-1} \tau_{m-1} \nu_m / \varepsilon_m \) \\
+        \> Berechne \( p_m = v_m - \mu_m p_{m-1} \) \\
+        end if \\
+        Berechne \(x_m = x_{m-1} + \tau_m p_m\)
+    \end{tabbing}
+
+    Aufwand: pro Schritt sechs \textsc{SAXPYs}, zwei Skalarprodukte und 
+    zwei Matrix-Vektormultiplikationen.
+\end{karte}
+
+\subsection{Vorkonditionierung}
+
+\begin{karte}{Idee Vorkonditionierung}
+    LGS kann näherungsweise gelöst werden. 
+    Konvergenz hängt wesentlich von der Lage 
+    der Eigenwerte oder des Wertebereichs ab. 
+
+    \[ A x = b \Leftrightarrow BAx = Bb. \]
+    \(B = A^{-1}\) wäre die optimale Wahl (Konvergenz in einem Schritt).
+
+    Wir verlangen für den Vorkonditionierer
+    \begin{enumerate}
+        \item \(B \approx A^{-1}\),
+        \item \( B \in \R^{n,n} \) symmetrisch und positiv,
+        \item \(x \mapsto Bx\) leicht zu berechnen.
+    \end{enumerate}   
+\end{karte}
+
+\begin{karte}{Unvollständige Cholesky-Zerlegung}
+    Wählen die Faktorisierung \( A = \tilde{L} \tilde{L}^T + R \), 
+    wobei \(\tilde{L}\) eine untere Dreiecksmatrix mit derselben Besetzungsstruktur 
+    wie \(A\) und \(R\) eine Restmatrix.
+
+    Häufig bewirkt \( B = (\tilde{L} \tilde{L}^T)^{-1} \) eine Clusterung 
+    der Eigenwerte von \(BA\).
+
+    Wenn eine Faktorisierung von \(B = C C^T\) von \(B\) bekannt ist, 
+    (z. B. \(C = \tilde{L}^{-T}\)), ist unser neues LGS auch positiv definit: 
+    \[ B Ax = Bb \Leftrightarrow C C^T A x = C C^T b \Leftrightarrow \tilde{A} \tilde{x} = \tilde{b} \]
+    mit \( \tilde{A} = C^T A C, \tilde{x} = C^{-1} x, \tilde{b} = C^T b \).
+\end{karte}
+
+\begin{karte}{Fehlerabschätzung Vorkonditionierung}
+    Angenommen, es existieren \( 0 < \gamma \leq \Gamma \) mit 
+    \[ \gamma v^T B^{-1} v \leq v^T A v \leq \Gamma v^T B^{-1} v \quad \forall v\in\R^n. \]
+    Ist \( \widehat{x} = x^* = A^{-1}b \), dann gilt die Fehlerabschätzung 
+    \[ ||x_m - x^*||_A \leq 2 \left( \frac{\sqrt{\tilde{\kappa}} - 1}{\sqrt{\tilde{\kappa}} + 1} \right)^m 
+    ||x_0 - x^*||_A \quad, \tilde{\kappa} = \frac{\Gamma}{\gamma}. \]
 \end{karte}
