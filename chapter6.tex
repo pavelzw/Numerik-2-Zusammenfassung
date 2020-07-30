@@ -25,8 +25,8 @@
 \begin{karte}{Schur-Normalform}
     Zu jedem \(A\in \C^{n,n}\) gibt es eine unitäre Matrix \(U \in \C^{n,n}\) so, dass 
     \[ U^H A U = R = D + N, \]
-    wobei \(R\) obere Dreiecksform, \(N\) strikte obere Dreiecksform hat und 
-    \(D = \diag(\lambda_1, \ldots, \lambda_n)\) mit den Eigenwerten \( \lambda_1, \ldots, \lambda_n \)
+    wobei \(R\) obere Dreiecksform, \(N\) strikte obere Dreiecksform hat \\ 
+    und \(D = \diag(\lambda_1, \ldots, \lambda_n)\) mit den Eigenwerten \( \lambda_1, \ldots, \lambda_n \)
     von \(A\) ist. Die Matrix \(U\) kann so gewählt werden, dass die Eigenwerte in beliebiger 
     Reihenfolge in \(D\) auftreten.
 \end{karte}
@@ -201,7 +201,7 @@
 
 \subsection{QR-Algorithmus}
 
-\begin{karte}{}
+\begin{karte}{Iterative Berechnung der Eigenwerte}
     Sei \( u_1 \) der Eigenvektor zum betragsgrößten Eigenwert, 
     \( \mathcal{S}_1 = u_1^\bot = \set{u \in \C^n \;|\; u_1^H u = 0} \)
     sowie \( P_1 \) der Orthogonalprojektor \( P_1 = I - u_1 u_1^H \) auf \( \mathcal{S}_1 \).
@@ -371,7 +371,7 @@
         berechnen muss und 
         \item die übrigen Spalten von \( Q_k \) so wählt, dass \(Q_k\) unitär ist und \( A_{k+1} \) eine unredizierte obere Hessenberg-Matrix ist.
     \end{enumerate}
-    Dies wird beim \textit{buldge chasing} verwendet.
+    Dies wird beim \textit{bulge chasing} verwendet.
 \end{karte}
 
 \subsection{Singulärwertzerlegung}
@@ -393,13 +393,13 @@
 
 \begin{karte}{Bidiagonalisierung von \(A\in \C^{m,n}\)}
     \begin{tabbing}
-        { \texttt{function house}\((x)\) liefer \(u\) mit \((I - 2 u u^H)x = \alpha e_1\)} \\
+        { \texttt{function house}\((x)\) liefert \(u\) mit \((I - 2 u u^H)x = \alpha e_1\)} \\
         for \= \( j = 1,\ldots,n \) do \\
         \> \(u = \texttt{house}(A_{j:m, j})\) \\
         \> if \= \(j \leq n-2\) then \\
         \> \> \(u = \texttt{house}(A_{j,j+1:n}^T)\) \\
         \> \> \( A-{j:m, j+1:n} = A_{j:m,j+1:n}(I_{n-j} - 2 u u^H) \) \\
-        \> end if 
+        \> end if \\
         end for
     \end{tabbing}
 \end{karte}

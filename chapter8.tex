@@ -28,7 +28,7 @@
 \end{karte}
 
 \begin{karte}{Diskrete Fouriertransformation}
-    Die lineare Abbildung \( \abb{\Fcal_n}{\C^N}{\C^N} \)
+    Die lineare Abbildung \( \abb{\Fcal_N}{\C^N}{\C^N} \)
     definiert durch 
     \[ \Fcal_N x = \widehat{x}, \quad 
     \widehat{x}_k = \frac{1}{N} \sum_{j=0}^{N-1} \omega_N^{kj} x_j \]
@@ -84,6 +84,8 @@
     \[ \widehat{f}_N(k) - \widehat{f}(k) = \mathcal{O}(N^{-p}), \abs{k} \leq N/2. \]
     Insbesondere gilt für \(h=2\pi/N\)
     \[ h \sum_{j=0}^{N-1} f(\xi_j) - \int_0^{2\pi} f(\xi)d\xi = \mathcal{O}(h^p). \]
+
+    Außerdem folgt \( \abs{\widehat{f}(k)} \leq C k^{-p}, C = \frac{1}{2\pi} \int_0^{2\pi} \abs{f^{(p)}(\xi)} d\xi \).
 \end{karte}
 
 \begin{karte}{Trigonometrisches Interpolationspolynom}
