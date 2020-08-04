@@ -167,6 +167,16 @@
     \includegraphics[width=0.8\textwidth]{Nichtsymmetrisches-Lanczos-Verfahren.png}
 \end{karte}
 
+\begin{karte}{Lanczos-Verfahren Rekursion}
+    Es gilt 
+    \[ \tilde{v}_{m+1} = A v_m - \alpha_m v_m - \beta_m v_{m-1}, v_{m+1} = \frac{1}{\gamma_{m+1}} \tilde{v}_{m+1} \]
+    mit 
+    \[ \alpha_m = \frac{w_m^T A v_m}{w_m^T v_m}, \quad \beta_m = \frac{w_{m-1}^T A v_m}{w_{m-1}^T v_{m-1}}, \]
+    \[ \tilde{w}_{m+1} = A^T w_m - \tilde{\alpha}_m w_m - \tilde{\beta}_m w_{m-1}, w_{m+1} = \frac{1}{\tilde{\gamma}_{m+1}} \tilde{w}_{m+1} \]
+    mit 
+    \[ \tilde{\alpha}_m = \overline{\alpha_m}, \quad \overline{\tilde{\beta}_m} = \frac{\gamma_m}{\tilde{\gamma}_m} \beta_m. \]
+\end{karte}
+
 \begin{karte}{Nichtsymmetrisches Lanczos-Verfahren Eigenschaften}
     Für das nichtsymmetrische Lanczos-Verfahren gilt 
     \begin{enumerate}
